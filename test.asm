@@ -1,33 +1,19 @@
         * = $1000
 
-.const choice = $1100
+        #import "io.asm"
 
-.const chrout = $ffd2
-.const chrin = $ffcf
-
-        ldx #00
-        ldy #00
+.const  choice = $1100
 
         lda #'?'
-        jsr chrout
+        jsr $ffd2
 
-read:   jsr chrin
-        sta choice,y
-        iny
-        cmp #$0D
-        bne read
+        :readln(choice)
         
         lda #$0D
-        jsr chrout
+        jsr $ffd2
         lda #'>'
-        jsr chrout
+        jsr $ffd2
 
-print:  
-        lda choice,x
-        beq done
-        jsr chrout
-        inx
-        cmp #$0D
-        bne print
+        :println(choice)
 
-done:   rts
+        rts
