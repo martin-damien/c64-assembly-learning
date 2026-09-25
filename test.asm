@@ -1,19 +1,24 @@
         * = $1000
 
-        #import "io.asm"
+init:
+        ldx #0
+        ldy #1
+        jmp change
 
-.const  choice = $1100
+loop:
 
-        lda #'?'
-        jsr $ffd2
-
-        :readln(choice)
+        lda $d012
+        cmp #00
         
-        lda #$0D
-        jsr $ffd2
-        lda #'>'
-        jsr $ffd2
+        bne loop
 
-        :println(choice)
+change:
 
+        stx $d020
+        sty $d021
+        inx
+        iny
+
+        jmp loop
+        
         rts

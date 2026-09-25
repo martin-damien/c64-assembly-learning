@@ -18,5 +18,5 @@ loop:
     cmp #$0D
     bne loop
 done: 
-    rts
+    rts 
 }
