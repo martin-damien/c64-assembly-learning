@@ -12,6 +12,9 @@ loop:
         
         bne loop
 
+        bit $d011       // check 7th bit of A (stored in the negative flag)
+        bmi loop        // jump if negative flag is 1
+
 change:
 
         stx $d020
