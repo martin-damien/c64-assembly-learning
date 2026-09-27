@@ -1,36 +1,24 @@
         * = $1000
-.const  delay = $1200
 
-init:
-        lda #00
-        sta delay
-        ldx #00
-        ldy #01
-        jmp change_colors
+.const  high = $1210
+.const  low  = $1211
 
-wait_raster:
-        lda $d012
-        cmp #00
-        
-        bne wait_raster
+        // cut $04ff in two (high and low)
 
-        bit $d011       // check 7th bit of A (stored in the negative flag)
-        bmi wait_raster // jump if negative flag is 1     
+        lda #$04
+        sta high
+        lda #$ff
+        sta low
 
-change_colors:
-        inc delay
-        lda delay
-        cmp #50
-        
-        bne wait_raster
+        // Add 1 to the low part
 
-        // Reset delay
-        lda #0
-        sta delay
+        lda low
+        clc
+        adc #01
+        sta low
 
-        stx $d020
-        sty $d021
-        inx
-        iny
+        // Report the carry on high if an overflow happened previously
 
-        jmp wait_raster
+        lda high
+        adc #00
+        sta high
