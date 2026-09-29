@@ -1,24 +1,39 @@
         * = $1000
 
-.const  high = $1210
-.const  low  = $1211
+        ldy #00
 
-        // cut $04ff in two (high and low)
+        // We start ZeroPage pointer at $0400
 
+        lda #$00
+        sta $10
         lda #$04
-        sta high
-        lda #$ff
-        sta low
+        sta $11
 
-        // Add 1 to the low part
+clear_screen:
 
-        lda low
+        lda #$20 // Space
+        sta ($10),y
+
         clc
-        adc #01
-        sta low
+        
+        lda $10
+        adc #1
+        sta $10
 
-        // Report the carry on high if an overflow happened previously
+        lda $11
+        adc #0
+        sta $11
 
-        lda high
-        adc #00
-        sta high
+        // We quit the loop once we reached $07E8
+        // (screen ends at $07E7)
+
+        lda $11
+        cmp #$07
+        bne clear_screen
+
+        lda $10
+        cmp #$E8
+        bne clear_screen
+
+then:
+        jmp then
