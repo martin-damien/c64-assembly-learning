@@ -16,9 +16,7 @@
 
 clear_screen:
 
-        lda #$20 // Space
-        sta ($fb),y
-
+        :pt16w($fb, $20)
         :pt16inc($fb, $fc)
 
         // We quit the loop once we reached $07E8
@@ -66,7 +64,7 @@ bounce:
         inc fcounter
 
         lda fcounter
-        cmp #50
+        cmp #25
 
         bne bounce
 
@@ -90,6 +88,7 @@ bounce:
 
                 :pt16w($fb, 0)
 
+                lda $fc
                 cmp #$06
                 bne bounce
 
@@ -107,6 +106,7 @@ bounce:
 
                 :pt16w($fb, 0)
 
+                lda $fc
                 cmp #$05
                 bne bounce
 
@@ -118,6 +118,3 @@ bounce:
                 sta direction
 
                 jmp bounce
-
-loop:
-        jmp loop
