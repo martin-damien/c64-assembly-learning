@@ -2,6 +2,9 @@
 
         * = $1000
 
+.var    direction = $1100
+.var    fcounter = $1101 // Frame counter
+
         ldy #00
 
         // We start ZeroPage pointer at $0400
@@ -41,27 +44,51 @@ clear_screen:
         lda #$05
         sta $fc
 
+        lda #0
+        sta fcounter
+
         lda #1
-        sta $1100 // Save direction
+        sta direction
 
 bounce:
+
+        // New frame detection
+
+        lda $d012
+        cmp #0
+        bne bounce
+
+        bit $d011
+        bmi bounce
+
+        // Increase frame counter, loop if not 50, or continue and reset counter
+
+        inc fcounter
+
+        lda fcounter
+        cmp #50
+
+        bne bounce
+
+        lda #0
+        sta fcounter
 
         // Max addresse for the line is 607
 
         // @TODO Fixme (wrong character displayed)
-        :pt16w($fb, 32) // [space]
+        :pt16w($fb, $20) // [space]
 
         // Make correct operation based on $1100
 
-        lda $1100
+        lda direction
         cmp #1
         beq add
         bne sub
 
         add:
-                :pt16w($fb, 0)
-
                 :pt16inc($fb, $fc)
+
+                :pt16w($fb, 0)
 
                 cmp #$06
                 bne bounce
@@ -71,14 +98,14 @@ bounce:
                 bne bounce
 
                 lda #-1
-                sta $1100
+                sta direction
 
                 jmp bounce
 
         sub:
-                :pt16w($fb, 0)
-
                 :pt16dec($fb, $fc)
+
+                :pt16w($fb, 0)
 
                 cmp #$05
                 bne bounce
@@ -88,7 +115,7 @@ bounce:
                 bne bounce
 
                 lda #1
-                sta $1100
+                sta direction
 
                 jmp bounce
 
